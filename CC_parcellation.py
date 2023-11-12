@@ -19,7 +19,7 @@ st.write('The proposed Corpus Callosum (CC) parcellation is a data-driven method
 st.subheader('Tensorial Morphological Gradient of the Corpus Callosum')
 
 st.write('The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) [[3]](#references) as dissimilarity measure and using a 6-connected three-dimensional structuring element.\
-          For detailed information, see page _TMG info_.')
+          For detailed information, see page [TMG info](https://tmg-based-cc-parcellation.streamlit.app/TMG_info).')
 
 st.write('The TMG calculation requires the DTI eigenvalues and eigenvectors of each subject. Note that those must follow the DIPY convention, in which the eigenvectors are stored columnwise\
          (the last dimension of the array defines the eigenvector).')
@@ -93,7 +93,7 @@ st.write('It is not recommended to change the configurations bellow, since they 
          other configurations for the TMG and SOM.')
 
 expander_adv_tmg = st.expander("Advanced TMG configuration", expanded=False)
-expander_adv_tmg.write('For detailed information about the TMG parameters, see page _TMG info_.')
+expander_adv_tmg.write('For detailed information about the TMG parameters, see page [TMG info](https://tmg-based-cc-parcellation.streamlit.app/TMG_info).')
 metric = expander_adv_tmg.selectbox('Select dissimilarity measure:', ['prod', 'frob', 'Jdiv', 'logE'], 3)
 nbh = expander_adv_tmg.selectbox('Select structuring element:', [2, 4, 6, 8], 2)
 dict_ori = {2: ['x', 'y', 'z'], 4: ['xy', 'xz', 'yz'], 6: [''], 8: ['xy', 'xz', 'yz']}
