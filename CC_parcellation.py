@@ -10,7 +10,7 @@ import tempfile
 
 st.title('Corpus Callosum parcellation using TMG and SOM')
 
-st.write('The proposed Corpus Callosum (CC) parcellation is a data-driven method based on the Tensorial Morphological Gradient (TMG) map [1]. The TMG highlights regions of higher dissimilarity\
+st.write('The proposed Corpus Callosum (CC) parcellation is a data-driven method based on the Tensorial Morphological Gradient (TMG) map. The TMG [1] highlights regions of higher dissimilarity\
           between neighbor voxels taking into account not only intensity but also directional information from Diffusion Tensor Imaging (DTI) data. Then, the Self-Organizing Map (SOM) [2] is\
           used for clustering the voxels of the midsagittal slice of the CC into five regions, taking into account three-dimensional information captured by the TMG.')
 
@@ -50,6 +50,21 @@ st.write('If this division generates more than five connected components, an add
 
 st.write('Since the weight vectors of the SOM are randomly initialized, the results may vary for each run of the method. To minimize this variability and generate more consistent\
           parcellations, the procedure is repeated 100 times for each subject. Thus, the final parcellation is defined by majority of votes from each SOM execution.')
+
+#---------------------------------------
+
+st.subheader('References')
+
+st.markdown("""[1] Rittner, L., Campbell, J. S., Freitas, P. F., Appenzeller, S., Bruce Pike, G., & Lotufo, R. A. (2013). Analysis of scalar maps for the segmentation of the corpus callosum \
+            in diffusion tensor fields. _Journal of mathematical imaging and vision_, 45, 214-226, doi: [10.1007/s10851-012-0377-4](https://doi.org/10.1007/s10851-012-0377-4).""")
+
+st.markdown("""[2] Kohonen, T. (1990). The self-organizing map. _Proceedings of the IEEE_, 78(9), 1464-1480, doi: [10.1109/5.58325](https://doi.org/10.1109/5.58325).""")
+
+st.markdown("""[3] Arsigny, V., Fillard, P., Pennec, X., & Ayache, N. (2006). Log‐Euclidean metrics for fast and simple calculus on diffusion tensors. _Magnetic Resonance in Medicine_, \
+            56(2), 411-421, doi: [10.1002/mrm.20965](https://doi.org/10.1002/mrm.20965).""")
+
+st.markdown("""[4] Freitas, P., Rittner, L., Appenzeller, S., Lapa, A., & Lotufo, R. (2012). Watershed-based segmentation of the corpus callosum in diffusion MRI. In _Medical Imaging 2012:_ \
+            _Image Processing_ (Vol. 8314, pp. 879-885). SPIE, doi: [10.1117/12.911619](https://doi.org/10.1117/12.911619).""")
 
 #---------------------------------------
 
