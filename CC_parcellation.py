@@ -10,15 +10,15 @@ import tempfile
 
 st.title('Corpus Callosum parcellation using TMG and SOM')
 
-st.write('The proposed CC parcellation is a data-driven method based on the Tensorial Morphological Gradient (TMG) map. The TMG highlights regions of higher dissimilarity between neighbor\
-          voxels taking into account not only intensity but also directional information from DTI data. Then, the Self-Organizing Map (SOM) is used for clustering the voxels of the\
-          midsagittal slice of the CC into five regions, taking into account three-dimensional information captured by the TMG.')
+st.write('The proposed Corpus Callosum (CC) parcellation is a data-driven method based on the Tensorial Morphological Gradient (TMG) map [1]. The TMG highlights regions of higher dissimilarity\
+          between neighbor voxels taking into account not only intensity but also directional information from Diffusion Tensor Imaging (DTI) data. Then, the Self-Organizing Map (SOM) [2] is\
+          used for clustering the voxels of the midsagittal slice of the CC into five regions, taking into account three-dimensional information captured by the TMG.')
 
 #---------------------------------------
 
-st.subheader('Tensorial Morphological Gradient (TMG) of the Corpus Callosum')
+st.subheader('Tensorial Morphological Gradient of the Corpus Callosum')
 
-st.write('The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) as dissimilarity measure and using a 6-connected three-dimensional structuring element.\
+st.write('The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) [3] as dissimilarity measure and using a 6-connected three-dimensional structuring element.\
           For detailed information, see page _TMG info_.')
 
 st.write('The TMG calculation requires the DTI eigenvalues and eigenvectors of each subject. Note that those must follow the DIPY convention, in which the eigenvectors are stored columnwise\
@@ -26,11 +26,6 @@ st.write('The TMG calculation requires the DTI eigenvalues and eigenvectors of e
 
 st.write('Also, as the starting point for the parcellation method, a binary CC mask must be provided for each subject. It should include at least three CC slices: the midsagittal slice and the two\
          slices neighboring it. This is necessary for the correct calculation of the TMG using a 6-connected structuring element.')
-
-#Note: a CC mask including only the midsagittal slice (or only a slice of the CC...) could be correctly used with the TMG, but with specific structuring elements:
-#       - 2-connected (y or z orientations)
-#       - 4-connected (yz orientation)
-#       - 8-connected (yz orientation)
 
 #---------------------------------------
 
@@ -40,13 +35,13 @@ st.write('After obtaining the TMG of the segmented CC, only its midsagittal slic
           inter-hemispheric fissure of the brain, consisting of large areas of cerebrospinal fluid (low FA values) and white matter structures such as the CC (high FA values).')
          
 st.write('Therefore, after discarding slices in which the cross-sectional area of the brain falls below a certain minimum (extremities slices), the midsagittal slice is defined\
-          as the one with the lowest average FA. This process requires the FA map of each subject.')
+          as the one with the lowest average FA [4]. This process requires the FA map of each subject.')
 
 #---------------------------------------
 
-st.subheader('CC Parcellation with Self-Organizing Map (SOM)')
+st.subheader('Corpus Callosum Parcellation with Self-Organizing Maps')
 
-st.markdown("""The SOM was implemented with the python package [sklearn-som](https://github.com/rileypsmith/sklearn-som), configured to have a grid of $5$x$1$ and 10 epochs.\
+st.markdown("""The SOM was implemented with the python package [sklearn-som](https://github.com/rileypsmith/sklearn-som), configured to have a grid of $5$x$1$ and $10$ epochs.\
             The TMG values in the midsagittal section of the CC are used as input to the SOM, together with their spatial coordinates. By applying the SOM algorithm,\
             each voxel is assigned to one of the map units, defining five classes.""")
 
@@ -79,7 +74,7 @@ fa_file_name = expander_fnames.text_input('Filename of the FA:', 'FA.nii.gz')
 
 st.write('**ADVANCED CONFIGURATION**')
 
-st.write('It is not recommended to change the configurations bellow, since they correspond to the proposed method by default. However, *if you know what you are doing*, you can explore\
+st.write('It is not recommended to change the configurations bellow, since they correspond to the proposed method by default. However, it is possible explore\
          other configurations for the TMG and SOM.')
 
 expander_adv_tmg = st.expander("Advanced TMG configuration", expanded=False)
@@ -103,8 +98,8 @@ st.write('By default, the output will be a .zip file with the parcellation mask 
 expander_outputs = st.expander('Output options', expanded=False)
 expander_outputs.checkbox(f'Save TMG map', key="save_tmg")
 out_file_suffix = expander_outputs.text_input("TMG filename suffix:", "_CC_CNN", disabled=not st.session_state.save_tmg, key = 'out_file_suffix')
-expander_outputs.checkbox(f'Save each parcel as a separated binary mask file', key="save_parcels")
-expander_outputs.checkbox(f'Save file with the "certainty" of the parcellation', key="save_certain")
+expander_outputs.checkbox(f'Save each region as a separated binary mask file', key="save_parcels")
+expander_outputs.checkbox(f'Save file with the "certainty" of the parcellation (the proportion of times the SOM execution indicated the final class attributed to each voxel)', key="save_certain")
 
 #----------
 
