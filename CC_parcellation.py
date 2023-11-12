@@ -10,7 +10,7 @@ import tempfile
 
 st.title('Corpus Callosum parcellation using TMG and SOM')
 
-st.write('The proposed Corpus Callosum (CC) parcellation is a data-driven method based on the Tensorial Morphological Gradient (TMG) map. The TMG [1] highlights regions of higher dissimilarity\
+st.write('The proposed Corpus Callosum (CC) parcellation is a data-driven method based on the Tensorial Morphological Gradient (TMG) map. The TMG [[1]](#references) highlights regions of higher dissimilarity\
           between neighbor voxels taking into account not only intensity but also directional information from Diffusion Tensor Imaging (DTI) data. Then, the Self-Organizing Map (SOM) [2] is\
           used for clustering the voxels of the midsagittal slice of the CC into five regions, taking into account three-dimensional information captured by the TMG.')
 
