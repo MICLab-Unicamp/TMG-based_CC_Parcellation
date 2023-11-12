@@ -1,5 +1,5 @@
 def cut_imgs_mask(img, mask, get_min_max=False, pad=0, bin=True):
-    import numpy as np
+    import numpy as np 
 
     shape_ori = mask.shape
     # Cópia das matrizes de entrada, para não alterá-las

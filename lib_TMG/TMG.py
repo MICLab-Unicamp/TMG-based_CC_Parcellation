@@ -1,5 +1,5 @@
 def TMG(eigvals,eigvects,similarity,neighborhood=6,nbh_info=None,mask=None):
-    import numpy as np
+    import numpy as np 
     from lib_TMG import TMGMetrics as mtc
     from lib_TMG import TMGSE as se
 

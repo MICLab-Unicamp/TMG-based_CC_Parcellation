@@ -1,5 +1,5 @@
 def tensorialSimilarityMeasures(eigvals,eigvects,similarity,neighborhood,mode='default',mask=None):
-    import numpy as np
+    import numpy as np 
     import os
 
     # dict_comps = {}

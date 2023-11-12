@@ -1,6 +1,6 @@
 
 def two_connected(shape, info):
-    import numpy as np
+    import numpy as np 
 
     fat = shape[2]
     lin = shape[1]

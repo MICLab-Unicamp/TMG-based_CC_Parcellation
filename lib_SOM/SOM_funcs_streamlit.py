@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np 
 from sklearn_som.som import SOM
 from skimage.measure import label
 from skimage.morphology import binary_dilation
