@@ -11,14 +11,14 @@ import tempfile
 st.title('Corpus Callosum parcellation using TMG and SOM')
 
 st.write('The proposed Corpus Callosum (CC) parcellation is a data-driven method based on the Tensorial Morphological Gradient (TMG) map. The TMG [[1]](#references) highlights regions of higher dissimilarity\
-          between neighbor voxels taking into account not only intensity but also directional information from Diffusion Tensor Imaging (DTI) data. Then, the Self-Organizing Map (SOM) [2] is\
+          between neighbor voxels taking into account not only intensity but also directional information from Diffusion Tensor Imaging (DTI) data. Then, the Self-Organizing Map (SOM) [[2]](#references) is\
           used for clustering the voxels of the midsagittal slice of the CC into five regions, taking into account three-dimensional information captured by the TMG.')
 
 #---------------------------------------
 
 st.subheader('Tensorial Morphological Gradient of the Corpus Callosum')
 
-st.write('The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) [3] as dissimilarity measure and using a 6-connected three-dimensional structuring element.\
+st.write('The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) [[3]](#references) as dissimilarity measure and using a 6-connected three-dimensional structuring element.\
           For detailed information, see page _TMG info_.')
 
 st.write('The TMG calculation requires the DTI eigenvalues and eigenvectors of each subject. Note that those must follow the DIPY convention, in which the eigenvectors are stored columnwise\
@@ -35,7 +35,7 @@ st.write('After obtaining the TMG of the segmented CC, only its midsagittal slic
           inter-hemispheric fissure of the brain, consisting of large areas of cerebrospinal fluid (low FA values) and white matter structures such as the CC (high FA values).')
          
 st.write('Therefore, after discarding slices in which the cross-sectional area of the brain falls below a certain minimum (extremities slices), the midsagittal slice is defined\
-          as the one with the lowest average FA [4]. This process requires the FA map of each subject.')
+          as the one with the lowest average FA [[4]](#references). This process requires the FA map of each subject.')
 
 #---------------------------------------
 
