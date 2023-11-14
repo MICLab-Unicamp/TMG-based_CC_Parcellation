@@ -66,7 +66,9 @@ st.write('From the equation above, it is possible to see that symmetric matrices
 
 st.header('Structuring elements')
 
-#...
+nbh = st.selectbox('Select structuring element:', [2, 4, 6, 8], 2)
+dict_ori = {2: ['x', 'y', 'z'], 4: ['xy', 'xz', 'yz'], 6: [''], 8: ['xy', 'xz', 'yz']}
+nbh_ori = st.selectbox('Select orientation of the structuring element:', dict_ori[nbh])
 
 st.subheader('Visualization')
 
