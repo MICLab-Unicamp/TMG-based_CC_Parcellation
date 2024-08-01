@@ -10,15 +10,15 @@ import tempfile
 
 st.title('Corpus Callosum parcellation using TMG and SOM')
 
-st.write('The proposed Corpus Callosum (CC) parcellation is a data-driven method based on the Tensorial Morphological Gradient (TMG) map. The TMG [[1]](#references) highlights regions of higher dissimilarity\
-          between neighbor voxels taking into account not only intensity but also directional information from Diffusion Tensor Imaging (DTI) data. Then, the Self-Organizing Map (SOM) [[2]](#references) is\
+st.write('The proposed Corpus Callosum (CC) parcellation [[1]](#references) is a data-driven method based on the Tensorial Morphological Gradient (TMG) map. The TMG [[2]](#references) highlights regions of higher dissimilarity\
+          between neighbor voxels taking into account not only intensity but also directional information from Diffusion Tensor Imaging (DTI) data. Then, the Self-Organizing Map (SOM) [[3]](#references) is\
           used for clustering the voxels of the midsagittal slice of the CC into five regions, taking into account three-dimensional information captured by the TMG.')
 
 #---------------------------------------
 
 st.subheader('Tensorial Morphological Gradient of the Corpus Callosum')
 
-st.write('The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) [[3]](#references) as dissimilarity measure and using a 6-connected three-dimensional structuring element.\
+st.write('The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) [[4]](#references) as dissimilarity measure and using a 6-connected three-dimensional structuring element.\
           For detailed information, see page [TMG info](https://tmg-based-cc-parcellation.streamlit.app/TMG_info).')
 
 st.write('The TMG calculation requires the DTI eigenvalues and eigenvectors of each subject. Note that those must follow the DIPY convention, in which the eigenvectors are stored columnwise\
@@ -35,7 +35,7 @@ st.write('After obtaining the TMG of the segmented CC, only its midsagittal slic
           inter-hemispheric fissure of the brain, consisting of large areas of cerebrospinal fluid (low FA values) and white matter structures such as the CC (high FA values).')
          
 st.write('Therefore, after discarding slices in which the cross-sectional area of the brain falls below a certain minimum (extremities slices), the midsagittal slice is defined\
-          as the one with the lowest average FA [[4]](#references). This process requires the FA map of each subject.')
+          as the one with the lowest average FA [[5]](#references). This process requires the FA map of each subject.')
 
 #---------------------------------------
 
@@ -55,15 +55,19 @@ st.write('Since the weight vectors of the SOM are randomly initialized, the resu
 
 st.subheader('References')
 
-st.markdown("""[1] Rittner, L., Campbell, J. S., Freitas, P. F., Appenzeller, S., Bruce Pike, G., Lotufo, R. A. (2013). Analysis of scalar maps for the segmentation of the corpus callosum \
+st.markdown("""[1] Santana, C., Abreu, T., Rodrigues, J., Julio, P., Appenzeller, S., Rittner, L. (2023). DTI-based Corpus Callosum parcellation using the Tensorial Morphological \
+            Gradient and Self-Organizing Maps _In: 2023 19th International Symposium on Medical Information Processing and Analysis (SIPAIM)_, doi: \
+            [10.1109/SIPAIM56729.2023.10373443](https://doi.org/10.1109/SIPAIM56729.2023.10373443).""")
+
+st.markdown("""[2] Rittner, L., Campbell, J. S., Freitas, P. F., Appenzeller, S., Bruce Pike, G., Lotufo, R. A. (2013). Analysis of scalar maps for the segmentation of the corpus callosum \
             in diffusion tensor fields. _Journal of mathematical imaging and vision_, doi: [10.1007/s10851-012-0377-4](https://doi.org/10.1007/s10851-012-0377-4).""")
 
-st.markdown("""[2] Kohonen, T. (1990). The self-organizing map. _Proceedings of the IEEE_, doi: [10.1109/5.58325](https://doi.org/10.1109/5.58325).""")
+st.markdown("""[3] Kohonen, T. (1990). The self-organizing map. _Proceedings of the IEEE_, doi: [10.1109/5.58325](https://doi.org/10.1109/5.58325).""")
 
-st.markdown("""[3] Arsigny, V., Fillard, P., Pennec, X., Ayache, N. (2006). Log‐Euclidean metrics for fast and simple calculus on diffusion tensors. _Magnetic Resonance in Medicine_, doi: \
+st.markdown("""[4] Arsigny, V., Fillard, P., Pennec, X., Ayache, N. (2006). Log‐Euclidean metrics for fast and simple calculus on diffusion tensors. _Magnetic Resonance in Medicine_, doi: \
             [10.1002/mrm.20965](https://doi.org/10.1002/mrm.20965).""")
 
-st.markdown("""[4] Freitas, P., Rittner, L., Appenzeller, S., Lapa, A., Lotufo, R. (2012). Watershed-based segmentation of the corpus callosum in diffusion MRI. In _Medical Imaging 2012:_ \
+st.markdown("""[5] Freitas, P., Rittner, L., Appenzeller, S., Lapa, A., Lotufo, R. (2012). Watershed-based segmentation of the corpus callosum in diffusion MRI. In _Medical Imaging 2012:_ \
             _Image Processing_, doi: [10.1117/12.911619](https://doi.org/10.1117/12.911619).""")
 
 #---------------------------------------
