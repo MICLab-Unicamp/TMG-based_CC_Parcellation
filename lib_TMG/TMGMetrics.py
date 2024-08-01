@@ -60,7 +60,10 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
         txxr = (txx[...,i]-txx[...,j])**2
         tyyr = (tyy[...,i]-tyy[...,j])**2
         tzzr = (tzz[...,i]-tzz[...,j])**2
-        distance = (txxr+tyyr+tzzr)**0.5
+        txyr = (txy[...,i]-txy[...,j])**2
+        txzr = (txz[...,i]-txz[...,j])**2
+        tyzr = (tyz[...,i]-tyz[...,j])**2
+        distance = (txxr+tyyr+tzzr+2*txyr+2*txzr+2*tyzr)**0.5
 
     # norma de J-Divergence
     if (similarity == 'Jdiv'):
@@ -91,7 +94,9 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
         txxr = (txx[...,i]-txx[...,j])**2
         tyyr = (tyy[...,i]-tyy[...,j])**2
         tzzr = (tzz[...,i]-tzz[...,j])**2
-
-        distance = (txxr+tyyr+tzzr)**0.5
+        txyr = (txy[...,i]-txy[...,j])**2
+        txzr = (txz[...,i]-txz[...,j])**2
+        tyzr = (tyz[...,i]-tyz[...,j])**2
+        distance = (txxr+tyyr+tzzr+2*txyr+2*txzr+2*tyzr)**0.5
 
     return distance
