@@ -64,16 +64,6 @@ st.write('From the equation above, it is possible to see that symmetric matrices
 
 #---------------------------------------
 
-#st.header('Structuring elements')
-
-#nbh = st.selectbox('Select structuring element:', [2, 4, 6, 8], 2)
-#dict_ori = {2: ['x', 'y', 'z'], 4: ['xy', 'xz', 'yz'], 6: [''], 8: ['xy', 'xz', 'yz']}
-#nbh_ori = st.selectbox('Select orientation of the structuring element:', dict_ori[nbh])
-
-#st.image()
-
-#---------------------------------------
-
 st.subheader('References')
 
 st.markdown("""[1] Rittner, L., Campbell, J. S., Freitas, P. F., Appenzeller, S., Bruce Pike, G., Lotufo, R. A. (2013). Analysis of scalar maps for the segmentation of the corpus callosum \

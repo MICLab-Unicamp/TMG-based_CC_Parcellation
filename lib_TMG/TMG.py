@@ -86,19 +86,3 @@ def TMG(eigvals,eigvects,similarity,neighborhood=6,nbh_info=None,mask=None):
             img = distance.max(axis=-1)
 
     return img
-
-def T_TMG(eigvals,eigvects,similarity,neighborhood=2,mask=None):
-    import numpy as np
-
-    if neighborhood == 2:
-        nbh_infos = ['x', 'y', 'z']
-    else:
-        nbh_infos = ['yz', 'xz', 'xy']
-
-    img = np.zeros(np.append(eigvects.shape[0:3],3), dtype='float32')
-
-    for i, info in enumerate(nbh_infos):
-        img_temp = TMG(eigvals,eigvects,similarity,neighborhood,info,mask)
-        img[...,i] = img_temp
-
-    return img

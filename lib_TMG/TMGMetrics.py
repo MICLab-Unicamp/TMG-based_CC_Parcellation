@@ -1,17 +1,6 @@
 def tensorialSimilarityMeasures(eigvals,eigvects,similarity,neighborhood,mode='default',mask=None):
     import numpy as np 
     import os
-
-    # dict_comps = {}
-    # dict_comps[2] = {'i': [1,2,  2], 
-    #                  'j': [0,0,  1]}
-    # dict_comps[4] = {'i': [1,2,3,4,  2,3,4,  3,4,  4], 
-    #                  'j': [0,0,0,0,  1,1,1,  2,2,  3]}
-    # dict_comps[6] = {'i': [1,2,3,4,5,6,  2,3,4,5,6,  3,4,5,6,  4,5,6,  5,6,  6], 
-    #                  'j': [0,0,0,0,0,0,  1,1,1,1,1,  2,2,2,2,  3,3,3,  4,4,  5]}
-    # dict_comps[8] = {'i': [1,2,3,4,5,6,7,8,  2,3,4,5,6,7,8,  3,4,5,6,7,8,  4,5,6,7,8,  5,6,7,8,  6,7,8,  7,8,  8], 
-    #                  'j': [0,0,0,0,0,0,0,0,  1,1,1,1,1,1,1,  2,2,2,2,2,2,  3,3,3,3,3,  4,4,4,4,  5,5,5,  6,6,  7]}
-    # np.save('dict_comps', dict_comps, allow_pickle=True)
     
     if mode == 'fullc':
         j,i = np.mgrid[0:eigvals.shape[-2],0:eigvals.shape[-2]]
@@ -65,13 +54,12 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
         tyzr = (tyz[...,i]-tyz[...,j])**2
         distance = (txxr+tyyr+tzzr+2*txyr+2*txzr+2*tyzr)**0.5
 
-    # norma de J-Divergence
+    # J-Divergence
     if (similarity == 'Jdiv'):
         tensors = ut.TensorCalc(eigvals,eigvects)
         txx,tyy,tzz,txy,txz,tyz = ut.TensorToComponents(tensors)
         
         eigvalsi = eigvals.copy()
-        #Como tratar eigvals negativos?
         eigvalsi = np.maximum(eigvalsi, 0.0)
         ind = eigvalsi != 0.0
         eigvalsi[ind] = eigvalsi[ind]**-1
@@ -86,9 +74,8 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
         temp3b = txzi[...,j]*txz[...,i]+tyzi[...,j]*tyz[...,i]+tzzi[...,j]*tzz[...,i]
         distance = 0.5*(np.maximum(temp1a+temp1b+temp2a+temp2b+temp3a+temp3b,6.0)-6.0)**0.5
 
-    # norma de log-Euclidean correta (aproximação aplicada aos autovalores)
+    # log-Euclidean
     if (similarity == 'logE'):
-        #Como tratar eigvals negativos pra evitar problema no log? Por enquanto tô zerando valores negativos...
         log_tensors = ut.TensorCalc(np.log(100*np.maximum(eigvals,0)+1),eigvects)
         txx,tyy,tzz,txy,txz,tyz = ut.TensorToComponents(log_tensors)
         txxr = (txx[...,i]-txx[...,j])**2

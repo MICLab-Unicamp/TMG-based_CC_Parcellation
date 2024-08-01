@@ -142,7 +142,6 @@ def merge_small_comp(img_con, n_labels):
     es[:,1] = 1
     labels, conts = np.unique(img_con[img_con!=0], return_counts=True)
     while (len(labels) > n_labels):
-        #print(labels, conts)
         smaller_label = labels[np.argmin(conts)]
         
         temp = np.zeros(img_con.shape)
@@ -156,7 +155,6 @@ def merge_small_comp(img_con, n_labels):
         labels_v, conts_v = np.unique(temp2, return_counts=True)
         new_label = labels_v[np.argmax(conts_v)]
 
-        #print(smaller_label, new_label)
         img_con[img_con == smaller_label] = new_label
         labels, conts = np.unique(img_con[img_con!=0], return_counts=True)
 
