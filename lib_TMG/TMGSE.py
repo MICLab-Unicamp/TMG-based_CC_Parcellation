@@ -22,7 +22,7 @@ def two_connected(shape, info):
         indices[...,1] = lin*fat*i+fat*j+np.maximum(k-1,0)
         indices[...,2] = lin*fat*i+fat*j+np.minimum(k+1,fat-1)
 
-    #Fatia inferior         Fatia do meio           Fatia superior
+    # Bottom slice           Middle slice           Upper slice
 
     # |    |    |    |      |    |  x |    |        |    |    |    |
     # ----------------      ----------------        ----------------
@@ -65,7 +65,7 @@ def four_connected(shape, info):
 
     # xy plane
 
-    #Fatia inferior         Fatia do meio           Fatia superior
+    # Bottom slice           Middle slice           Upper slice
 
     # |    |    |    |      |    |  1 |    |        |    |    |    |
     # ----------------      ----------------        ----------------
@@ -76,7 +76,7 @@ def four_connected(shape, info):
 
     # xz plane
 
-    #Fatia inferior         Fatia do meio           Fatia superior
+    # Bottom slice           Middle slice           Upper slice
 
     # |    |    |    |      |    |    |    |        |    |    |    |
     # ----------------      ----------------        ----------------
@@ -87,7 +87,7 @@ def four_connected(shape, info):
 
     # yz plane
 
-    #Fatia inferior         Fatia do meio           Fatia superior
+    # Bottom slice           Middle slice           Upper slice
 
     # |    |    |    |      |    |  2 |    |        |    |    |    |
     # ----------------      ----------------        ----------------
@@ -118,7 +118,7 @@ def six_connected(shape, info):
     indices[...,6] = lin*fat*i+fat*j+np.minimum(k+1,fat-1)
 
 
-    #Fatia inferior         Fatia do meio           Fatia superior
+    # Bottom slice           Middle slice           Upper slice
 
     # |    |    |    |      |    |  1 |    |        |    |    |    |
     # ----------------      ----------------        ----------------
@@ -174,7 +174,7 @@ def eight_connected(shape, info):
 
     # xy plane
 
-    #Fatia inferior         Fatia do meio           Fatia superior
+    # Bottom slice           Middle slice           Upper slice
 
     # |    |    |    |      |  0 |  1 |  2 |        |    |    |    |
     # ----------------      ----------------        ----------------
@@ -185,7 +185,7 @@ def eight_connected(shape, info):
 
     # xz plane
 
-    #Fatia inferior         Fatia do meio           Fatia superior
+    # Bottom slice           Middle slice           Upper slice
 
     # |    |    |    |      |    |    |    |        |    |    |    |
     # ----------------      ----------------        ----------------
@@ -196,7 +196,7 @@ def eight_connected(shape, info):
 
     # yz plane
 
-    #Fatia inferior         Fatia do meio           Fatia superior
+    # Bottom slice           Middle slice           Upper slice
 
     # |    |  0 |    |      |    |  3 |    |        |    |  6 |    |
     # ----------------      ----------------        ----------------

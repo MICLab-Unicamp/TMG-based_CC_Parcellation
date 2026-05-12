@@ -12,15 +12,15 @@ def tensorialSimilarityMeasures(eigvals,eigvects,similarity,neighborhood,mode='d
     distance = DistanceCalc(eigvals, eigvects, similarity, i, j)
 
     if mask is not None:
-        #Se a comparação considerar algum voxel de fundo, o valor associado a ela é zero
+        # If the comparison involves any background voxel, its value is zero
         mask_dist = mask[...,i]*mask[...,j]
 
-        #No caso do prod, essas comparações teriam erroneamente o valor zero, então faço a soma com (1-mask_dist) para adicionar um ao resultado dessas comparações
-        #Assim, quando pegar o mínimo, essas comparações problemáticas serão geralmente desconsideradas
+        # In the case of prod, those comparisons would incorrectly be zero, so add (1-mask_dist) to add one to those results
+        # Thus, when taking the minimum, those problematic comparisons are usually ignored
         if similarity == 'prod':
             distance = distance*mask_dist + (1-mask_dist)
-        #Seguindo a mesma ideia para as métricas de dissimilaridade, simplesmente multiplico distance*mask_dist
-        #Assim, comparações considerando voxels de fundo são zeradas e ignoradas ao pegar o máximo
+        # Following the same idea for dissimilarity metrics, simply multiply distance*mask_dist
+        # Thus comparisons involving background voxels are zeroed and ignored when taking the maximum
         else:
             distance = distance*mask_dist
 
@@ -32,17 +32,17 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
 
     distance = None
 
-    # produto escalar
+    # dot product
     if (similarity == 'prod'):
-        #evecs que são todos zero modificados para nan
+        # evecs that are all zero are changed to nan
         eigvects[np.where(np.abs(eigvects).sum(-1).sum(-1)==0)] = np.nan
         e1x,e1y,e1z,e2x,e2y,e2z,e3x,e3y,e3z = ut.EigvectsToComponents(eigvects)
-        #Daí quando a distância considerando esses voxels é calculada ela resulta em nan
+        # Then when the distance for those voxels is computed it yields nan
         distance = np.abs(e1x[...,i]*e1x[...,j]+e1y[...,i]*e1y[...,j]+e1z[...,i]*e1z[...,j])
-        #Substituindo os valores nan por 1, quando pegar o mínimo, esses valores são ignorados, a não ser que todos sejam problematicos
+        # Replacing nan values with 1 so they are ignored when taking the minimum, unless all are problematic
         distance[np.isnan(distance)] = 1.0
 
-    # norma de frobenius
+    # frobenius norm
     if (similarity == 'frob'):
         tensors = ut.TensorCalc(eigvals,eigvects)
         txx,tyy,tzz,txy,txz,tyz = ut.TensorToComponents(tensors)

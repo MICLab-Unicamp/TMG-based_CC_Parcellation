@@ -5,19 +5,19 @@ def TMG(eigvals,eigvects,similarity,neighborhood=6,nbh_info=None,mask=None):
 
     dict_nbh = {2: se.two_connected, 4: se.four_connected, 6: se.six_connected, 8: se.eight_connected}
 
-    # Cópia das matrizes de entrada, para não alterá-las
+    # Copy input arrays so as not to modify them
     eigvalslin = eigvals.copy()
     eigvectslin = eigvects.copy()
 
     if mask is not None:
-        # Cópia das matrizes de entrada, para não alterá-las
+        # Copy input arrays so as not to modify them
         mask_norm = mask.copy()
-        # Garante que a máscara é binária
+        # Ensure the mask is binary
         mask_norm[mask_norm != 0] = 1
 
-        # Obtém os índices dos voxels de interesse
+        # Get indices of voxels of interest
         roi_ind = np.where(mask_norm == 1)
-        # Pega os máximos e mínimos em cada dimensão (extremidades da máscara)
+        # Get min/max per dimension (mask boundaries)
         min_x = np.min(roi_ind[0])
         max_x = np.max(roi_ind[0])
         min_y = np.min(roi_ind[1])
@@ -25,31 +25,31 @@ def TMG(eigvals,eigvects,similarity,neighborhood=6,nbh_info=None,mask=None):
         min_z = np.min(roi_ind[2])
         max_z = np.max(roi_ind[2])
 
-        # Bounding box em torno da máscara para evitar cálculos desnecessários
+        # Bounding box around the mask to avoid unnecessary calculations
         eigvalslin = eigvalslin[min_x:max_x+1,min_y:max_y+1,min_z:max_z+1]
         eigvectslin = eigvectslin[min_x:max_x+1,min_y:max_y+1,min_z:max_z+1]
         masccut = np.int8(mask_norm[min_x:max_x+1,min_y:max_y+1,min_z:max_z+1])
 
-        # Zera os voxels de fundo para evitar cálculos desnecessários
+        # Zero background voxels to avoid unnecessary calculations
         masklin = np.expand_dims(masccut, axis = -1)
         eigvalslin = eigvalslin*masklin
 
         masklin = np.expand_dims(masklin, axis = -1)
         eigvectslin = eigvectslin*masklin
 
-        # Achata a matriz
+        # Flatten the matrix
         masklin.shape = np.prod(masklin.shape)
 
     shape = eigvectslin.shape
 
-    # Transforma as 3 primeiras dimensões em uma só
+    # Transform the first 3 dimensions into one
     eigvalslin.shape = np.append(np.prod(eigvalslin.shape[0:3]),eigvalslin.shape[3])
     eigvectslin.shape = np.append(np.prod(eigvectslin.shape[0:3]),eigvectslin.shape[3::])
     
-    # Calcula para cada voxel os índices dos voxels que compõem a sua vizinhança
+    # For each voxel, calculate the indices of voxels in its neighborhood
     indices = dict_nbh[neighborhood](shape, nbh_info)
 
-    # Seleciona
+    # Select
     eigvalsb = eigvalslin[indices,:]
     eigvectsb = eigvectslin[indices,:,:]
 
@@ -58,27 +58,27 @@ def TMG(eigvals,eigvects,similarity,neighborhood=6,nbh_info=None,mask=None):
     else:
         maskb = None
 
-    # Calcula as distâncias
+    # Compute distances
     distance = mtc.tensorialSimilarityMeasures(eigvalsb,eigvectsb,similarity,neighborhood,mask=maskb)
 
     if mask is not None:
-        # Multiplico a distância pela máscara para garantir que os voxels de fundo são todos zeros
+        # Multiply distance by the mask so background voxels are zero
         distance = distance*np.expand_dims(masccut, axis = -1)
     
-    # Calcula o TMG propriamente dito
+    # Compute the actual TMG
     if (similarity == 'prod'):
-        # Para métricas de similaridade, calcula o mínimo entre as distâncias
+        # For similarity metrics, take the minimum across distances
         if mask is not None:
             img = np.zeros(mask.shape, dtype=distance.dtype)
             img[min_x:max_x+1,min_y:max_y+1,min_z:max_z+1] = distance.min(axis=-1)
-            # Calcula o negativo do prod (apenas no interior da máscara) para ficar no padrão das outras métricas
+            # Compute the negative of prod (inside the mask only) to match other metrics
             img[mask_norm == 1] = img[mask_norm == 1].max()-img[mask_norm == 1]
         else:
             img = distance.min(axis=-1)
             img = img.max() - img
         
     else:
-        # Para métricas de dissimilaridade, calcula o máximo entre as distâncias
+        # For dissimilarity metrics, take the maximum across distances
         if mask is not None:
             img = np.zeros(mask.shape, dtype=distance.dtype)
             img[min_x:max_x+1,min_y:max_y+1,min_z:max_z+1] = distance.max(axis=-1)

@@ -8,117 +8,173 @@ import numpy as np
 import zipfile
 import tempfile
 
-st.title('Corpus Callosum parcellation using TMG and SOM')
+st.title("Corpus Callosum Parcellation Using TMG and SOM")
 
-st.write('The proposed Corpus Callosum (CC) parcellation [[1]](#references) is a data-driven method based on the Tensorial Morphological Gradient (TMG) map. The TMG [[2]](#references) highlights regions of higher dissimilarity\
-          between neighbor voxels taking into account not only intensity but also directional information from Diffusion Tensor Imaging (DTI) data. Then, the Self-Organizing Map (SOM) [[3]](#references) is\
-          used for clustering the voxels of the midsagittal slice of the CC into five regions, taking into account three-dimensional information captured by the TMG.')
-
-#---------------------------------------
-
-st.subheader('Tensorial Morphological Gradient of the Corpus Callosum')
-
-st.write('The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) [[4]](#references) as dissimilarity measure and using a 6-connected three-dimensional structuring element.\
-          For detailed information, see page [TMG info](https://tmg-based-cc-parcellation.streamlit.app/TMG_info).')
-
-st.write('The TMG calculation requires the DTI eigenvalues and eigenvectors of each subject. Note that those must follow the DIPY convention, in which the eigenvectors are stored columnwise\
-         (the last dimension of the array defines the eigenvector).')
-
-st.write('Also, as the starting point for the parcellation method, a binary CC mask must be provided for each subject. It should include at least three CC slices: the midsagittal slice and the two\
-         slices neighboring it. This is necessary for the correct calculation of the TMG using a 6-connected structuring element.')
+st.write("""
+         This application implements the proposed data-driven Corpus Callosum (CC) parcellation method [[1]](#references),
+         based on the Tensorial Morphological Gradient (TMG) map. The TMG [[2]](#references) highlights regions of higher
+         dissimilarity between neighboring voxels by considering both intensity and directional information from Diffusion
+         Tensor Imaging (DTI) data. The Self-Organizing Map (SOM) [[3]](#references) is then used to cluster voxels from the
+         midsagittal slice of the CC into five regions using three-dimensional information captured by the TMG.
+         """)
 
 #---------------------------------------
 
-st.subheader('Definition of the Midsagittal Slice')
+st.subheader("Tensorial Morphological Gradient of the Corpus Callosum")
 
-st.write('After obtaining the TMG of the segmented CC, only its midsagittal slice is considered for the parcellation. It is identified by the diffusion properties of the\
-          inter-hemispheric fissure of the brain, consisting of large areas of cerebrospinal fluid (low FA values) and white matter structures such as the CC (high FA values).')
+st.write("""
+         The method is based on the TMG map of the CC, computed with the Log-Euclidean distance (logE) [[4]](#references) as
+         dissimilarity measure and using a 6-connected three-dimensional structuring element. For detailed information, see
+         page [TMG info](https://tmg-based-cc-parcellation.streamlit.app/TMG_info).
+         """)
+
+st.write("""
+         The TMG computation requires the DTI eigenvalues and eigenvectors for each subject. They must follow the DIPY convention,
+         in which the eigenvectors are stored columnwise (i.e., the last array dimension represents the eigenvector).
+         """)
+
+st.write("""
+         A binary CC mask must also be provided for each subject. The mask should include at least three CC slices:
+         the midsagittal slice and its two neighboring slices. This requirement ensures the correct computation of
+         the TMG using a 6-connected structuring element.
+         """)
+
+#---------------------------------------
+
+st.subheader("Definition of the Midsagittal Slice")
+
+st.write("""
+         After computing the TMG map of the segmented CC, only the midsagittal slice is used for parcellation.
+         This slice is identified using diffusion properties of the interhemispheric fissure, which typically contains
+         large cerebrospinal fluid regions (low FA values) adjacent to white matter structures such as the CC (high FA values).
+         """)
          
-st.write('Therefore, after discarding slices in which the cross-sectional area of the brain falls below a certain minimum (extremities slices), the midsagittal slice is defined\
-          as the one with the lowest average FA [[5]](#references). This process requires the FA map of each subject.')
+st.write("""
+         Therefore, after discarding slices in which the cross-sectional area of the brain falls below a certain minimum
+         (extremities slices), the midsagittal slice is defined as the one with the lowest average FA [[5]](#references).
+         This process requires the FA map of each subject.
+         """)
 
 #---------------------------------------
 
-st.subheader('Corpus Callosum Parcellation with Self-Organizing Maps')
+st.subheader("Corpus Callosum Parcellation with Self-Organizing Maps")
 
-st.markdown("""The SOM was implemented with the python package [sklearn-som](https://github.com/rileypsmith/sklearn-som), configured to have a grid of $5$x$1$ and $10$ epochs.\
-            The TMG values in the midsagittal section of the CC are used as input to the SOM, together with their spatial coordinates. By applying the SOM algorithm,\
-            each voxel is assigned to one of the map units, defining five classes.""")
+st.markdown("""
+            The SOM was implemented with the python package [sklearn-som](https://github.com/rileypsmith/sklearn-som),
+            configured with a $\small 5 \\times 1$ grid and trained for $\small 10$ epochs. The TMG values in the midsagittal
+            section of the CC are used as input to the SOM, together with their spatial coordinates. By applying the SOM algorithm,
+            each voxel is assigned to one SOM unit, defining five classes.
+            """)
 
-st.write('If this division generates more than five connected components, an additional step is performed: the smaller component is identified and its class is changed to the most\
-          frequent class occurring in its neighborhood. This step is repeated until there are only five components left.')
+st.write("""
+         If this division generates more than five connected components, an additional step is performed: the smaller component
+         is identified and its class is changed to the most frequent class occurring in its neighborhood. This step is repeated
+         until there are only five components left.
+         """)
 
-st.write('Since the weight vectors of the SOM are randomly initialized, the results may vary for each run of the method. To minimize this variability and generate more consistent\
-          parcellations, the procedure is repeated 100 times for each subject. Thus, the final parcellation is defined by majority of votes from each SOM execution.')
-
-#---------------------------------------
-
-st.subheader('References')
-
-st.markdown("""[1] Santana, C., Abreu, T., Rodrigues, J., Julio, P., Appenzeller, S., Rittner, L. (2023). DTI-based Corpus Callosum parcellation using the Tensorial Morphological \
-            Gradient and Self-Organizing Maps _In: 2023 19th International Symposium on Medical Information Processing and Analysis (SIPAIM)_, doi: \
-            [10.1109/SIPAIM56729.2023.10373443](https://doi.org/10.1109/SIPAIM56729.2023.10373443).""")
-
-st.markdown("""[2] Rittner, L., Campbell, J. S., Freitas, P. F., Appenzeller, S., Bruce Pike, G., Lotufo, R. A. (2013). Analysis of scalar maps for the segmentation of the corpus callosum \
-            in diffusion tensor fields. _Journal of mathematical imaging and vision_, doi: [10.1007/s10851-012-0377-4](https://doi.org/10.1007/s10851-012-0377-4).""")
-
-st.markdown("""[3] Kohonen, T. (1990). The self-organizing map. _Proceedings of the IEEE_, doi: [10.1109/5.58325](https://doi.org/10.1109/5.58325).""")
-
-st.markdown("""[4] Arsigny, V., Fillard, P., Pennec, X., Ayache, N. (2006). Log‐Euclidean metrics for fast and simple calculus on diffusion tensors. _Magnetic Resonance in Medicine_, doi: \
-            [10.1002/mrm.20965](https://doi.org/10.1002/mrm.20965).""")
-
-st.markdown("""[5] Freitas, P., Rittner, L., Appenzeller, S., Lapa, A., Lotufo, R. (2012). Watershed-based segmentation of the corpus callosum in diffusion MRI. In _Medical Imaging 2012:_ \
-            _Image Processing_, doi: [10.1117/12.911619](https://doi.org/10.1117/12.911619).""")
+st.write("""
+         Since the weight vectors of the SOM are randomly initialized, the results may vary for each run of the method. To
+         minimize this variability and generate more consistent parcellations, the procedure is repeated 100 times for each
+         subject. Thus, the final parcellation is defined by majority of votes from each SOM execution.
+         """)
 
 #---------------------------------------
 
-st.subheader('Configuration')
+st.subheader("References")
+
+st.markdown("""
+            [1] Santana, C., Abreu, T., Rodrigues, J., Julio, P., Appenzeller, S., Rittner, L. (2023). DTI-based Corpus
+            Callosum parcellation using the Tensorial Morphological Gradient and Self-Organizing Maps In: _2023 19th
+            International Symposium on Medical Information Processing and Analysis (SIPAIM)_, doi:
+            [10.1109/SIPAIM56729.2023.10373443](https://doi.org/10.1109/SIPAIM56729.2023.10373443).
+            """)
+
+st.markdown("""
+            [2] Rittner, L., Campbell, J. S., Freitas, P. F., Appenzeller, S., Bruce Pike, G., Lotufo, R. A. (2013).
+            Analysis of scalar maps for the segmentation of the corpus callosum in diffusion tensor fields. _Journal
+            of mathematical imaging and vision_, doi: [10.1007/s10851-012-0377-4](https://doi.org/10.1007/s10851-012-0377-4).
+            """)
+
+st.markdown("""
+            [3] Kohonen, T. (1990). The self-organizing map. _Proceedings of the IEEE_, doi:
+            [10.1109/5.58325](https://doi.org/10.1109/5.58325).
+            """)
+
+st.markdown("""
+            [4] Arsigny, V., Fillard, P., Pennec, X., Ayache, N. (2006). Log‐Euclidean metrics for fast and simple calculus
+            on diffusion tensors. _Magnetic Resonance in Medicine_, doi: [10.1002/mrm.20965](https://doi.org/10.1002/mrm.20965).
+            """)
+
+st.markdown("""
+            [5] Freitas, P., Rittner, L., Appenzeller, S., Lapa, A., Lotufo, R. (2012). Watershed-based segmentation of the
+            corpus callosum in diffusion MRI. In: _Medical Imaging 2012: Image Processing_, doi:
+            [10.1117/12.911619](https://doi.org/10.1117/12.911619).
+            """)
+
+#---------------------------------------
+
+st.subheader("Method Setup")
 
 #----------
 
-st.write('**INPUT**')
+with st.container(border=True):
 
-st.write('Each subject data should be uploaded as a .zip file containing all the required files (eigenvalues, eigenvectors, CC mask, and FA map) in .nii or .nii.gz format.\
-         Note that the uploader (bellow) accepts multiple files/subjects.')
+    st.write("**INPUT**")
 
-uploaded_files = st.file_uploader("Select file(s):", type='zip', accept_multiple_files=True)
+    st.write("""
+             Each subject's data should be uploaded as a `.zip` file containing all the required files (eigenvalues, eigenvectors,
+             CC mask, and FA map) in `.nii` or `.nii.gz` format. The uploader below accepts multiple files/subjects.
+             """)
 
-expander_fnames = st.expander('Expand to specify the names of the required files', expanded=False)
-evals_file_name = expander_fnames.text_input('Filename of the eigenvalues:', 'evals.nii.gz')
-evecs_file_name = expander_fnames.text_input('Filename of the eigenvectors:', 'evecs.nii.gz')
-mask_file_name = expander_fnames.text_input('Filename of the mask:', 'CC_mask_CNN.nii.gz')
-fa_file_name = expander_fnames.text_input('Filename of the FA:', 'FA.nii.gz')
+    uploaded_files = st.file_uploader("Select file(s):", type='zip', accept_multiple_files=True)
 
-#----------
-
-st.write('**ADVANCED CONFIGURATION**')
-
-st.write('It is not recommended to change the configurations bellow, since they correspond to the proposed method by default. However, it is possible explore\
-         other configurations for the TMG and SOM.')
-
-expander_adv_tmg = st.expander("Advanced TMG configuration", expanded=False)
-expander_adv_tmg.write('For detailed information about the TMG parameters, see page [TMG info](https://tmg-based-cc-parcellation.streamlit.app/TMG_info).')
-metric = expander_adv_tmg.selectbox('Select dissimilarity measure:', ['prod', 'frob', 'Jdiv', 'logE'], 3)
-nbh = expander_adv_tmg.selectbox('Select structuring element:', [2, 4, 6, 8], 2)
-dict_ori = {2: ['x', 'y', 'z'], 4: ['xy', 'xz', 'yz'], 6: [''], 8: ['xy', 'xz', 'yz']}
-nbh_ori = expander_adv_tmg.selectbox('Select orientation of the structuring element:', dict_ori[nbh])
-
-expander_adv_som = st.expander("Advanced SOM configuration", expanded=False)
-n_labels = expander_adv_som.number_input('Number of labels:', value=5, min_value=1)
-epochs = expander_adv_som.number_input('Number of epochs:', value=10, min_value=1)
-n_rep = expander_adv_som.number_input('Number of repetitions:', value=100, min_value=1)
+    expander_fnames = st.expander('Expand to specify the names of the required files', expanded=False)
+    evals_file_name = expander_fnames.text_input('Filename of the eigenvalues:', 'evals.nii.gz')
+    evecs_file_name = expander_fnames.text_input('Filename of the eigenvectors:', 'evecs.nii.gz')
+    mask_file_name = expander_fnames.text_input('Filename of the mask:', 'CC_mask_CNN.nii.gz')
+    fa_file_name = expander_fnames.text_input('Filename of the FA:', 'FA.nii.gz')
 
 #----------
 
-st.write('**OUTPUT**')
+with st.container(border=True):
 
-st.write('By default, the output will be a .zip file with the parcellation mask ("CC_parc_SOM.nii.gz") of each subject in its respective folder. Other output options can be selected bellow.')
+    st.write("**OUTPUT**")
 
-expander_outputs = st.expander('Output options', expanded=False)
-expander_outputs.checkbox(f'Save TMG map', key="save_tmg")
-out_file_suffix = expander_outputs.text_input("TMG filename suffix:", "_CC_CNN", disabled=not st.session_state.save_tmg, key = 'out_file_suffix')
-expander_outputs.checkbox(f'Save each region as a separated binary mask file', key="save_parcels")
-expander_outputs.checkbox(f'Save file with the "certainty" of the parcellation (the proportion of times the SOM execution indicated the final class attributed to each voxel)', key="save_certain")
+    st.write("""
+            By default, the output will be a `.zip` file with the parcellation mask (`CC_parc_SOM.nii.gz`) of each subject in its
+            respective folder. Other output options can be selected below.
+            """)
+
+    expander_outputs = st.expander('Output options', expanded=False)
+    expander_outputs.checkbox('Save TMG map', key="save_tmg")
+    out_file_suffix = expander_outputs.text_input("TMG filename suffix:", "_CC_CNN", disabled=not st.session_state.save_tmg, key = 'out_file_suffix')
+    expander_outputs.checkbox('Save each region as a separate binary mask', key="save_parcels")
+    expander_outputs.checkbox('Save parcellation certainty maps', key="save_certain",
+                          help="The certainty indicates the proportion of times the SOM execution indicated the final class attributed to each voxel")
+
+
+#----------
+
+with st.container(border=True):
+
+    st.write("**ADVANCED CONFIGURATION**")
+
+    st.write("""
+            It is not recommended to change the parameters below, because they correspond to the proposed method by default.
+            However, it is possible to explore other configurations for the TMG and SOM.
+            """)
+
+    expander_adv_tmg = st.expander("Advanced TMG configuration", expanded=False)
+    expander_adv_tmg.write('For detailed information about the TMG parameters, see page [TMG info](https://tmg-based-cc-parcellation.streamlit.app/TMG_info).')
+    metric = expander_adv_tmg.selectbox('Select dissimilarity measure:', ['prod', 'frob', 'Jdiv', 'logE'], 3)
+    nbh = expander_adv_tmg.selectbox('Select structuring element:', [2, 4, 6, 8], 2)
+    dict_ori = {2: ['x', 'y', 'z'], 4: ['xy', 'xz', 'yz'], 6: [''], 8: ['xy', 'xz', 'yz']}
+    nbh_ori = expander_adv_tmg.selectbox('Select orientation of the structuring element:', dict_ori[nbh])
+
+    expander_adv_som = st.expander("Advanced SOM configuration", expanded=False)
+    n_labels = expander_adv_som.number_input('Number of labels:', value=5, min_value=1)
+    epochs = expander_adv_som.number_input('Number of epochs:', value=10, min_value=1)
+    n_rep = expander_adv_som.number_input('Number of repetitions:', value=100, min_value=1)
 
 #----------
 
@@ -128,7 +184,7 @@ st.write('**CURRENT CONFIGURATION**')
 
 st.write(f'**TMG:** measure {metric}, structuring element {nbh}{nbh_ori}.', )
 
-st.write(f'**SOM:** {n_labels} labels, {epochs} ephocs, {n_rep} repetitions.', )
+st.write(f'**SOM:** {n_labels} labels, {epochs} epochs, {n_rep} repetitions.', )
 
 saves = ''
 if st.session_state.save_tmg: saves+=', TMG'
@@ -138,10 +194,13 @@ if st.session_state.save_certain: saves+=', parcellation certainty'
 st.write(f'**Output:** full parcellation' + saves + '.')
 
 if len(uploaded_files) == 0:
-    st.write('**:red[Upload the file(s) to allow the parcellation!]**')
+    st.error('Upload the file(s) to allow the parcellation!')
 else:
-    st.write('**If the configuration is correct, click in the button bellow to perform the parcellation. The last four parcellation results will be presented (on-the-fly) for visualization.\
-             After completion, a new button will appear to download the results.**')
+    st.info("""
+            If the configuration is correct, click the button bellow to perform the parcellation. The four most recent
+            parcellation results will be displayed during processing for visualization. After completion, a new button will
+            appear to download the results.
+            """)
 
 st.markdown("""---""")
 
@@ -189,7 +248,7 @@ def click_button():
         with zipfile.ZipFile(uploaded_file, 'r') as zip_ref:
             # Extract the files to the temporary directory
             zip_ref.extractall(temp_dir.name)
-            # Gettin files
+            # Load files
             evals,affine = load_nifti(os.path.join(temp_dir.name, evals_file_name))
             evecs,_ = load_nifti(os.path.join(temp_dir.name, evecs_file_name))
             mask,_ = load_nifti(os.path.join(temp_dir.name, mask_file_name))
@@ -210,7 +269,7 @@ def click_button():
 
         # Apply SOM
         final_parc, certainty = SOM_parc(tmg, mask, evals, fa, n_labels=n_labels, epochs=epochs, n_rep=n_rep)
-        #Correcting labels
+        #Correct labels
         final_parc[final_parc != 0] = final_parc[final_parc != 0]*(-1) + 6
 
         # Save parcellation
@@ -218,7 +277,7 @@ def click_button():
 
         # Save parcels
         if st.session_state.save_parcels:
-            # Generating masks
+            # Generate masks
             region_I = final_parc.copy()
             region_I[region_I != 1] = 0
             region_II = final_parc.copy()
@@ -233,7 +292,7 @@ def click_button():
             region_V = final_parc.copy()
             region_V[region_V != 5] = 0
             region_V[region_V == 5] = 1
-            # Saving masks
+            # Save masks
             save_nifti(os.path.join(temp_dir_out.name, id, 'CC_parc_SOM_I.nii.gz'), region_I, affine)
             save_nifti(os.path.join(temp_dir_out.name, id, 'CC_parc_SOM_II.nii.gz'), region_II, affine)
             save_nifti(os.path.join(temp_dir_out.name, id, 'CC_parc_SOM_III.nii.gz'), region_III, affine)

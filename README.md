@@ -1,5 +1,12 @@
 # TMG-based Corpus Callosum Parcellation
 
-Demo of the ["DTI-based Corpus Callosum (CC) parcellation using the Tensorial Morphological Gradient (TMG) and Self-Organizing Maps (SOM)"](https://doi.org/10.1109/SIPAIM56729.2023.10373443) - SIPAIM (2023).
+This repository contains a Streamlit demo of the method proposed in:
 
-To access the demo, go to this [link](https://tmg-based-cc-parcellation.streamlit.app/).
+> Santana, C., Abreu, T., Rodrigues, J., Julio, P., Appenzeller, S., Rittner, L.  
+> DTI-based Corpus Callosum parcellation using the Tensorial Morphological Gradient (TMG) and Self-Organizing Maps (SOM).  
+> In: _2023 19th International Symposium on Medical Information Processing and Analysis (SIPAIM)_.  
+> doi: [10.1109/SIPAIM56729.2023.10373443](https://doi.org/10.1109/SIPAIM56729.2023.10373443)
+
+To access the online demo, visit:
+
+https://tmg-based-cc-parcellation.streamlit.app/

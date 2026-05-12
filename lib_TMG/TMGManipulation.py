@@ -1,8 +1,8 @@
 def TensorCalc(eigvals,eigvects):
     import numpy as np 
 
-    tensors = np.empty(np.append(eigvects.shape[0:4],6), dtype=eigvects.dtype) #,eigvects.shape[3],eigvects.shape[4]))
-    # Retorna as componentes na seguinte ordem: txx,tyy,tzz,txy,txz,tyz
+    tensors = np.empty(np.append(eigvects.shape[0:4],6), dtype=eigvects.dtype)
+    # Return the components in the following order: txx, tyy, tzz, txy, txz, tyz
     tensors[...,0] = eigvals[...,0]*eigvects[...,0,0]**2+eigvals[...,1]*eigvects[...,0,1]**2+eigvals[...,2]*eigvects[...,0,2]**2
     tensors[...,1] = eigvals[...,0]*eigvects[...,1,0]**2+eigvals[...,1]*eigvects[...,1,1]**2+eigvals[...,2]*eigvects[...,1,2]**2
     tensors[...,2] = eigvals[...,0]*eigvects[...,2,0]**2+eigvals[...,1]*eigvects[...,2,1]**2+eigvals[...,2]*eigvects[...,2,2]**2

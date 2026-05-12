@@ -8,89 +8,89 @@ def SOM_parc(tmg, mask, evals, fa, sb_msp = 0, n_labels = 5, epochs=10, n_rep=10
 
     ori_shape = mask.shape
 
-    #Obtendo o slice do MSP
+    # Getting the MSP slice
     msp_slice = get_msp_slice(evals, fa)
-    #Caso queira pegar alguma fatia próxima ao MSP
+    # If you want a slice close to the MSP
     msp_slice += sb_msp
 
-    #Pegando a máscara apenas no MSP
+    # Taking the mask only at the MSP
     mask_msp = mask[msp_slice]
-    #Cortando um bounding box em torno do CC
+    # Cutting a bounding box around the CC
     mask_cut, pos_cut = BB_CC_MSP(mask_msp)
 
-    #Obtendo as posições de cada pixel pertencente à máscara
+    # Getting positions of each pixel belonging to the mask
     i,j = np.indices(mask_cut.shape)
     i_mask = i[mask_cut==1]
     j_mask = j[mask_cut==1]
 
-    #Normalizando as posições de 0 a 1
+    # Normalizing positions from 0 to 1
     i_mask_n = (i_mask - i_mask.min())/(i_mask.max() - i_mask.min())
     j_mask_n = (j_mask - j_mask.min())/(j_mask.max() - j_mask.min())
 
-    #Juntando as posições num único array
+    # Combining positions into a single array
     i_mask_n = np.expand_dims(i_mask_n, axis=1)
     j_mask_n = np.expand_dims(j_mask_n, axis=1)
     pos_n = np.append(i_mask_n, j_mask_n, axis=1)
 
-    #Pegando apenas o MSP slice do TMG
+    # Taking only the MSP slice of the TMG
     tmg_msp = tmg[msp_slice]
-    #Cortando de acordo com o bounding box
+    # Cutting according to the bounding box
     tmg_cut = tmg_msp[pos_cut[0], pos_cut[1]]
-    #Pegando apenas os pixels da máscara
+    # Taking only mask pixels
     tmg_mask = tmg_cut[mask_cut==1]
 
-    #Normalizando de 0 a 1
+    # Normalizing from 0 to 1
     tmg_i_n = (tmg_mask - tmg_mask.min())/(tmg_mask.max() - tmg_mask.min())
     tmg_i_n = np.expand_dims(tmg_i_n, axis=1)
 
-    #Juntando as informações do TMG com as informações das posições de cada pixel
+    # Joining TMG data with pixel position information
     final_data = np.append(tmg_i_n, pos_n, axis=1)
 
-    #Três features/dimensões: uma para as intensidades do TMG e duas para as posições dos pixels
+    # Three features/dimensions: one for TMG intensities and two for pixel positions
     dim = 3
 
-    #Array para guardar a contagem de labels que cada pixel recebeu nas repetições
+    # Array to store the count of labels each pixel received across repetitions
     count_labels = np.zeros(np.append(mask_cut.shape, n_labels+1))
 
     for r in range(n_rep):
-        #Gera o SOM a partir do vetor de dados da imagem (contendo as intensidades e posições de cada pixel)
+        # Generate the SOM from the image data vector (containing intensities and pixel positions)
         som1 = SOM(m=n_labels, n=1, dim=dim, max_iter=epochs*final_data.shape[0])
         som1.fit(final_data, epochs=epochs)
-        #Obtém a predição para a mesma imagem do fit
+        # Get the prediction for the same image used to fit
         predictions1 = som1.predict(final_data)
 
-        #Reorganiza as predições obtidas para as dimensões do bounding box
+        # Reorganize predictions into the bounding box dimensions
         first_img = np.ones(mask_cut.shape)*-1
         first_img[i_mask, j_mask] = predictions1
-        #Redefine as labels de acordo com os componentes conexos
+        # Redefine labels according to connected components
         label_fi = label(first_img, background=-1, connectivity=1)
 
-        #Função para fundir o menor componente conexo ao componente conexo mais presente em sua borda externa, até que restem apenas 5 componentes
+        # Function to merge the smallest connected component into the most prevalent adjacent component until only 5 components remain
         img_con = merge_small_comp(label_fi.copy(), n_labels)
 
-        #Novamente, redefine as labels de acordo com os componentes conexos gerados após a redução
+        # Again, relabel according to connected components after reduction
         final_img = label(img_con, background=0, connectivity=1)
 
-        #Para cada repetição do "treino/predição", contabiliza a label definida para cada pixel
+        # For each train/predict repetition, count the label assigned to each pixel
         for u in np.unique(final_img):
             x = np.where(final_img == u, 1, 0)
             count_labels[...,u] += x
 
-    #Por fim, a cada pixel é definida a label com mais "votos" após as repetições
+    # Finally, each pixel is assigned the label with the most "votes" after repetitions
     final_parc_bb = label(np.argmax(count_labels, axis=-1), background=0, connectivity=1)
-    #Incerteza
+    # Uncertainty
     temp_uncert = np.max(count_labels, axis=-1)
 
-    #Função para fundir o menor componente conexo ao componente conexo mais presente em sua borda externa, até que restem apenas 5 componentes
+    # Function to merge the smallest connected component into the most prevalent adjacent component until only 5 components remain
     final_parc_bb_con = merge_small_comp(final_parc_bb.copy(), n_labels)
 
-    #Novamente, redefine as labels de acordo com os componentes conexos gerados após a redução
+    # Again, relabel according to connected components after reduction
     final_parc_bb_con = label(final_parc_bb_con, background=0, connectivity=1)
 
-    #Traz o parcelamento para as dimensões da imagem original
+    # Bring the parcellation back to original image dimensions
     final_parc = np.zeros(ori_shape, dtype=mask_cut.dtype)
     final_parc[msp_slice][pos_cut[0], pos_cut[1]] = final_parc_bb_con
-    #Incerteza
+    # Uncertainty
     final_uncert = np.zeros(ori_shape, dtype=float)
     final_uncert[msp_slice][pos_cut[0], pos_cut[1]] = temp_uncert*mask_cut/n_rep
 
@@ -107,20 +107,20 @@ def get_msp_slice(evals, fa):
     return np.argmin(FAmean)
 
 def BB_CC_MSP(mask, get_min_max=False, pad=0, bin=True):
-    # Cópia da matriz de entrada, para não alterá-la
+    # Copy the input array so as not to modify it
     mask_norm = mask.copy()
 
     if bin:
-        # Garante que a máscara é binária
+        # Ensure the mask is binary
         mask_norm[mask_norm != 0] = 1
 
-        # Obtém os índices dos voxels de interesse
+        # Get indices of voxels of interest
         roi_ind = np.where(mask_norm == 1)
     else:
-        # Obtém os índices dos voxels de interesse
+        # Get indices of voxels of interest
         roi_ind = np.where(mask_norm > 0)
     
-    # Pega os máximos e mínimos em cada dimensão (extremidades da máscara)
+    # Get min/max per dimension (mask boundaries)
     min_x = np.min(roi_ind[0]) - pad
     max_x = np.max(roi_ind[0]) + pad
     min_y = np.min(roi_ind[1]) - pad
@@ -128,7 +128,7 @@ def BB_CC_MSP(mask, get_min_max=False, pad=0, bin=True):
     slice_x = slice(min_x,max_x+1)
     slice_y = slice(min_y,max_y+1)
 
-    # Bounding box em torno da máscara para evitar cálculos desnecessários
+    # Bounding box around the mask to avoid unnecessary calculations
     mask_cut = np.int8(mask_norm[slice_x,slice_y])
 
     if get_min_max:

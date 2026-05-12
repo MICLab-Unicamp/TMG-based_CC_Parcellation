@@ -2,20 +2,20 @@ def cut_imgs_mask(img, mask, get_min_max=False, pad=0, bin=True):
     import numpy as np 
 
     shape_ori = mask.shape
-    # Cópia das matrizes de entrada, para não alterá-las
+    # Copy input arrays so as not to modify them
     mask_norm = mask.copy()
 
     if bin:
-        # Garante que a máscara é binária
+        # Ensure the mask is binary
         mask_norm[mask_norm != 0] = 1
 
-        # Obtém os índices dos voxels de interesse
+        # Get indices of voxels of interest
         roi_ind = np.where(mask_norm == 1)
     else:
-        # Obtém os índices dos voxels de interesse
+        # Get indices of voxels of interest
         roi_ind = np.where(mask_norm > 0)
     
-    # Pega os máximos e mínimos em cada dimensão (extremidades da máscara)
+    # Get min/max per dimension (mask boundaries)
     min_x = np.min(roi_ind[0]) - pad
     max_x = np.max(roi_ind[0]) + pad
     min_y = np.min(roi_ind[1]) - pad
@@ -26,7 +26,7 @@ def cut_imgs_mask(img, mask, get_min_max=False, pad=0, bin=True):
     slice_y = slice(min_y,max_y+1)
     slice_z = slice(min_z,max_z+1)
 
-    # Bounding box em torno da máscara para evitar cálculos desnecessários
+    # Bounding box around the mask to avoid unnecessary calculations
     img_cut = img.copy()
     img_cut = img_cut[slice_x,slice_y,slice_z]
     mask_cut = np.int8(mask_norm[slice_x,slice_y,slice_z])
@@ -40,7 +40,7 @@ def vis_imgs_2D(imgs, plane, slice_number, n_col, titles=None, cmap='gray', f_m_
     import matplotlib.pyplot as plt
     import numpy as np
 
-    #Configurando os plots
+    # Configure plots
     if len(imgs)%n_col == 0:
         n_lin = len(imgs)//n_col
     else:
