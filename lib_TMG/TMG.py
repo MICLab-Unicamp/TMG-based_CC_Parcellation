@@ -1,16 +1,46 @@
 def TMG(eigvals,eigvects,similarity,neighborhood=6,nbh_info=None,mask=None):
+    '''
+    Inputs:
+    
+    eigvals ->      DTI eigenvalues following DIPY convention (shape = (x,y,z,3),
+                    eigvals[...,0] = l1, eigvals[...,1] = l2, eigvals[...,1] = l3).
+    
+    eigvects ->     DTI eigenvectors following DIPY convention (shape = (x,y,z,3,3), eigenvectors are stored columnwise, i.e.,
+                    the last dimension of the array defines the eigenvector).
+
+    similarity ->   Define the metric used to calculate the TMG. The options are "prod", "frob", "logE", and "Jdiv".
+                    For more information on the metrics, check the file "TMG Metrics Info and Examples on Synthetic Data.ipynb".
+
+    neighborhood -> Define the neighborhood (structuring element) used to calculate the TMG. The options are 2, 4, 6, and 8.
+                    To visualize the different options, check the file "TMG Neighborhood Visualization.ipynb".
+
+    nbh_info ->     Define the orientation of the structuring element, not used for neighborhood = 6 (3D structuring element).
+                    If neighborhood = 2, the options are "x", "y", and "z".
+                    if neighborhood = 4 or 8, the options are "xy", "xz", and "yz".
+                    To visualize the different options, check the file "TMG Neighborhood Visualization.ipynb".
+
+    mask ->         If a mask is provided, the TMG will only be calculated inside of it.
+
+    --------------------------------------------------
+
+    Outputs:
+
+    img ->          TMG 3D scalar image.
+    '''
+
     import numpy as np 
     from lib_TMG import TMGMetrics as mtc
     from lib_TMG import TMGSE as se
 
     dict_nbh = {2: se.two_connected, 4: se.four_connected, 6: se.six_connected, 8: se.eight_connected}
 
-    # Copy input arrays so as not to modify them
+    # Copy of input matrices
     eigvalslin = eigvals.copy()
     eigvectslin = eigvects.copy()
 
+    # If an input mask is provided, the TMG will only be calculated inside of it
     if mask is not None:
-        # Copy input arrays so as not to modify them
+        # Copy of input matrices
         mask_norm = mask.copy()
         # Ensure the mask is binary
         mask_norm[mask_norm != 0] = 1

@@ -1,14 +1,19 @@
+# Functions that define the distance metrics and calculate the distance between each pair of voxels in a neighborhood
+
 def tensorialSimilarityMeasures(eigvals,eigvects,similarity,neighborhood,mode='default',mask=None):
     import numpy as np 
     import os
     
+    # Calculate all pairwise distances, even the redundant ones (such as 0-1 and 1-0)
     if mode == 'fullc':
         j,i = np.mgrid[0:eigvals.shape[-2],0:eigvals.shape[-2]]
+    # Use the file 'dict_comps.npy' to avoid calculating redundant distances
     else:
         dict_comps = np.load(os.path.join(os.path.dirname(__file__),'dict_comps.npy'), allow_pickle=True).tolist()
         i = dict_comps[neighborhood]['i']
         j = dict_comps[neighborhood]['j']
 
+    # Calculate the distances using the selected metric
     distance = DistanceCalc(eigvals, eigvects, similarity, i, j)
 
     if mask is not None:
@@ -32,7 +37,7 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
 
     distance = None
 
-    # dot product
+    # Dot Product (prod)
     if (similarity == 'prod'):
         # evecs that are all zero are changed to nan
         eigvects[np.where(np.abs(eigvects).sum(-1).sum(-1)==0)] = np.nan
@@ -42,7 +47,7 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
         # Replacing nan values with 1 so they are ignored when taking the minimum, unless all are problematic
         distance[np.isnan(distance)] = 1.0
 
-    # frobenius norm
+    # Frobenius Norm (frob)
     if (similarity == 'frob'):
         tensors = ut.TensorCalc(eigvals,eigvects)
         txx,tyy,tzz,txy,txz,tyz = ut.TensorToComponents(tensors)
@@ -54,7 +59,7 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
         tyzr = (tyz[...,i]-tyz[...,j])**2
         distance = (txxr+tyyr+tzzr+2*txyr+2*txzr+2*tyzr)**0.5
 
-    # J-Divergence
+    # J-Divergence (Jdiv)
     if (similarity == 'Jdiv'):
         tensors = ut.TensorCalc(eigvals,eigvects)
         txx,tyy,tzz,txy,txz,tyz = ut.TensorToComponents(tensors)
@@ -74,7 +79,7 @@ def DistanceCalc(eigvals, eigvects, similarity, i, j):
         temp3b = txzi[...,j]*txz[...,i]+tyzi[...,j]*tyz[...,i]+tzzi[...,j]*tzz[...,i]
         distance = 0.5*(np.maximum(temp1a+temp1b+temp2a+temp2b+temp3a+temp3b,6.0)-6.0)**0.5
 
-    # log-Euclidean
+    # Log-Euclidean distance (logE)
     if (similarity == 'logE'):
         log_tensors = ut.TensorCalc(np.log(100*np.maximum(eigvals,0)+1),eigvects)
         txx,tyy,tzz,txy,txz,tyz = ut.TensorToComponents(log_tensors)

@@ -1,3 +1,6 @@
+# Auxiliary functions for tensorial manipulation
+
+# Calculate the tensors (unique components) from the eigenvalues and eigenvectors
 def TensorCalc(eigvals,eigvects):
     import numpy as np 
 
@@ -12,6 +15,7 @@ def TensorCalc(eigvals,eigvects):
 
     return tensors
 
+# Return the components of the tensors
 def TensorToComponents(tensors):
 
     txx = tensors[...,0]
@@ -23,6 +27,7 @@ def TensorToComponents(tensors):
 
     return txx,tyy,tzz,txy,txz,tyz
 
+# Calculate the full tensors (3x3 matrices) from the eigenvalues and eigenvectors
 def FullTensorCalc(eigvals,eigvects):
     import numpy as np
 
@@ -36,6 +41,7 @@ def FullTensorCalc(eigvals,eigvects):
 
     return tensors
 
+# Return the components of the eigenvalues
 def EigvalsToComponents(eigvals):
 
     lambda1 = eigvals[...,0]
@@ -44,6 +50,7 @@ def EigvalsToComponents(eigvals):
 
     return lambda1,lambda2,lambda3
 
+# Return the components of the eigenvectors
 def EigvectsToComponents(eigvects):
 
     e1x = eigvects[...,0,0]

@@ -1,3 +1,4 @@
+# Functions that define the neighbors of each voxel according to the selected neighborhood
 
 def two_connected(shape, info):
     import numpy as np 
@@ -22,13 +23,39 @@ def two_connected(shape, info):
         indices[...,1] = lin*fat*i+fat*j+np.maximum(k-1,0)
         indices[...,2] = lin*fat*i+fat*j+np.minimum(k+1,fat-1)
 
-    # Bottom slice           Middle slice           Upper slice
+    '''
+    Voxels in the neighborhood according to the selected axis:
 
-    # |    |    |    |      |    |  x |    |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |    |  z |    |      |  y |  * |  y |        |    |  z |    |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |    |  x |    |        |    |    |    |
+    -> x axis
+
+    Bottom slice           Middle slice            Upper slice
+
+    |    |    |    |      |    |    |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |  1 |  0 |  2 |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |    |    |        |    |    |    |
+
+    -> y axis
+
+    Bottom slice           Middle slice            Upper slice
+
+    |    |    |    |      |    |  1 |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |  0 |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |  2 |    |        |    |    |    |
+
+    -> z axis
+
+    Bottom slice           Middle slice            Upper slice
+
+    |    |    |    |      |    |    |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |  1 |    |      |    |  0 |    |        |    |  2 |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |    |    |        |    |    |    |
+    '''
 
     return indices
 
@@ -62,38 +89,40 @@ def four_connected(shape, info):
         indices[...,3] = lin*fat*i+fat*np.minimum(j+1,lin-1)+k
         indices[...,4] = lin*fat*i+fat*j+np.minimum(k+1,fat-1)
 
+    '''
+    Voxels in the neighborhood according to the selected plane:
 
-    # xy plane
+    -> xy plane
 
-    # Bottom slice           Middle slice           Upper slice
+    Bottom slice           Middle slice            Upper slice
 
-    # |    |    |    |      |    |  1 |    |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |  2 |  0 |  3 |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |    |  4 |    |        |    |    |    |
+    |    |    |    |      |    |  1 |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |  2 |  0 |  3 |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |  4 |    |        |    |    |    |
+
+    -> xz plane
+
+    Bottom slice           Middle slice            Upper slice
+
+    |    |    |    |      |    |    |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |  1 |    |      |  2 |  0 |  3 |        |    |  4 |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |    |    |        |    |    |    |
 
 
-    # xz plane
+    -> yz plane
 
-    # Bottom slice           Middle slice           Upper slice
+    Bottom slice           Middle slice            Upper slice
 
-    # |    |    |    |      |    |    |    |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |    |  1 |    |      |  2 |  0 |  3 |        |    |  4 |    |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |    |    |    |        |    |    |    |
-
-
-    # yz plane
-
-    # Bottom slice           Middle slice           Upper slice
-
-    # |    |    |    |      |    |  2 |    |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |    |  1 |    |      |    |  0 |    |        |    |  4 |    |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |    |  3 |    |        |    |    |    |
+    |    |    |    |      |    |  2 |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |  1 |    |      |    |  0 |    |        |    |  4 |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |  3 |    |        |    |    |    |
+    '''
 
     return indices
 
@@ -117,14 +146,17 @@ def six_connected(shape, info):
     indices[...,5] = lin*fat*i+fat*np.minimum(j+1,lin-1)+k
     indices[...,6] = lin*fat*i+fat*j+np.minimum(k+1,fat-1)
 
+    '''
+    Voxels in the neighborhood:
 
-    # Bottom slice           Middle slice           Upper slice
+    Bottom slice           Middle slice            Upper slice
 
-    # |    |    |    |      |    |  1 |    |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |    |  0 |    |      |  2 |  3 |  4 |        |    |  6 |    |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |    |  5 |    |        |    |    |    |
+    |    |    |    |      |    |  1 |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |  0 |    |      |  2 |  3 |  4 |        |    |  6 |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |  5 |    |        |    |    |    |
+    '''
 
     return indices
 
@@ -171,37 +203,38 @@ def eight_connected(shape, info):
         indices[...,7] = lin*fat*i+fat*j+np.minimum(k+1,fat-1)
         indices[...,8] = lin*fat*i+fat*np.minimum(j+1,lin-1)+np.minimum(k+1,fat-1)
 
+    '''
+    Voxels in the neighborhood according to the selected plane:
 
-    # xy plane
+    -> xy plane
 
-    # Bottom slice           Middle slice           Upper slice
+    Bottom slice           Middle slice            Upper slice
 
-    # |    |    |    |      |  0 |  1 |  2 |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |  3 |  4 |  5 |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |  6 |  7 |  8 |        |    |    |    |
+    |    |    |    |      |  0 |  1 |  2 |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |  3 |  4 |  5 |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |  6 |  7 |  8 |        |    |    |    |
 
+   -> xz plane
 
-    # xz plane
+    Bottom slice           Middle slice            Upper slice
 
-    # Bottom slice           Middle slice           Upper slice
+    |    |    |    |      |    |    |    |        |    |    |    |
+    ----------------      ----------------        ----------------
+    |  0 |  1 |  2 |      |  3 |  4 |  5 |        |  6 |  7 |  8 |
+    ----------------      ----------------        ----------------
+    |    |    |    |      |    |    |    |        |    |    |    |
 
-    # |    |    |    |      |    |    |    |        |    |    |    |
-    # ----------------      ----------------        ----------------
-    # |  0 |  1 |  2 |      |  3 |  4 |  5 |        |  6 |  7 |  8 |
-    # ----------------      ----------------        ----------------
-    # |    |    |    |      |    |    |    |        |    |    |    |
+    -> yz plane
 
+    Bottom slice           Middle slice            Upper slice
 
-    # yz plane
-
-    # Bottom slice           Middle slice           Upper slice
-
-    # |    |  0 |    |      |    |  3 |    |        |    |  6 |    |
-    # ----------------      ----------------        ----------------
-    # |    |  1 |    |      |    |  4 |    |        |    |  7 |    |
-    # ----------------      ----------------        ----------------
-    # |    |  2 |    |      |    |  5 |    |        |    |  8 |    |
+    |    |  0 |    |      |    |  3 |    |        |    |  6 |    |
+    ----------------      ----------------        ----------------
+    |    |  1 |    |      |    |  4 |    |        |    |  7 |    |
+    ----------------      ----------------        ----------------
+    |    |  2 |    |      |    |  5 |    |        |    |  8 |    |
+    '''
 
     return indices
