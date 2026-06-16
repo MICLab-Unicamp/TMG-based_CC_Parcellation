@@ -11,7 +11,10 @@ st.write('For each voxel $\small v$ in a tensorial image $\small f$, the dissimi
 st.latex(r'''\nabla_B^T(f)(v) = \bigvee_{i,j \in B_v} d_n(T_i, T_j)''')
 
 st.write('There are several dissimilarity measures proposed for DTI applications and explored through the TMG [[1]](#references), some of which are presented below. The choice of the structuring element generally depends on the\
-          information required (bi- or three-dimensional) and the size of the studied structure - smaller structuring elements tend to generate thinner, more detailed borders.')
+          information required (2D or 3D) and the size of the studied structure - smaller structuring elements tend to generate thinner, more detailed borders.\
+          Additional information about the metrics and examples of TMG computation using synthetic data can be found in [TMG Metrics Info and Examples on Synthetic Data.ipynb](https://github.com/MICLab-Unicamp/TMG-based_CC_Parcellation/tree/main/examples_TMG/TMG Metrics Info and Examples on Synthetic Data.ipynb).\
+          To visualize different SE options, use [TMG Neighborhood Visualization.ipynb](https://github.com/MICLab-Unicamp/TMG-based_CC_Parcellation/tree/main/examples_TMG/TMG Neighborhood Visualization.ipynb)\
+          (should be run locally and requires [DIPY and FURY](https://docs.dipy.org/stable/user_guide/installation)).')
 
 #---------------------------------------
 
